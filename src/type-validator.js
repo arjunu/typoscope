@@ -5,13 +5,14 @@ const types = {
     object: "Object",
     array: "Array",
     null: "Null",
-    undefined: "Undefined"
+    undefined: "Undefined",
+    any: "Any"
 };
 
 function validate(type, value) {
     const getType = item => Object.prototype.toString.call(item).slice(8, -1);
 
-    const checkPrimitiveType = (type, value) => type === getType(value);
+    const checkPrimitiveType = (type, value) => type === types.any || type === getType(value);
 
     const checkObjectType =
         (type, value) =>
