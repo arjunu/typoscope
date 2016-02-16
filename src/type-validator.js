@@ -16,7 +16,9 @@ function validate(type, value) {
 
     const checkObjectType =
         (type, value) =>
-            getType(value) !== types.object ? false : Object.keys(type).every(tKey => checkType(type[tKey], value[tKey]));
+            getType(value) !== types.object ? false : Object.keys(type).every(
+                tKey =>!value.hasOwnProperty(tKey) ? false : checkType(type[tKey], value[tKey])
+            );
 
     const checkArrayType =
         (type, value) => getType(value) !== types.array ? false : value.every(item => checkType(type[0], item));
