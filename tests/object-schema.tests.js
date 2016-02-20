@@ -1,4 +1,5 @@
 import {expect} from 'chai';
+import 'mocha-sinon';
 import {types, validate} from './../src';
 
 describe("Validate objects schemas", ()=> {
@@ -100,6 +101,10 @@ describe("Validate objects schemas", ()=> {
     });
 
     describe("invalid schema", ()=> {
+        beforeEach(function () {
+            this.sinon.stub(console, 'error');
+        });
+
         it('simple object types mismatch should return false', ()=> {
             let falseValue = {
                 a: 'Sandeep', b: 123, c: false, d: [] //d should be an object
@@ -109,7 +114,13 @@ describe("Validate objects schemas", ()=> {
                 a: 'Sandeep', b: 123, c: 1, d: 1 //d should be an object
             };
 
+            //without error logs
             expect(validate(simpleObjectSchema, falseValue)).to.be.equal(false);
+            expect(validate(simpleObjectSchema, falseValue2)).to.be.equal(false);
+
+            //with error logs
+            validate(simpleObjectSchema, falseValue, true);
+            expect(console.error.calledWith(`Type mismatch for 'd': expected Object, got Array`)).to.be.equal(true);
             expect(validate(simpleObjectSchema, falseValue2)).to.be.equal(false);
         });
 

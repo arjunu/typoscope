@@ -12,11 +12,13 @@ var runner = '/Users/rztm838/Downloads/phantomjs-2.1.1-macosx/bin/phantomjs';
 module.exports = function (wallaby) {
     return {
         files: [
-            {pattern: 'src/*.js', load: false}
+            {pattern: 'src/*.js', load: false},
+            {pattern: 'node_modules/sinon/pkg/sinon.js', instrument: false}
         ],
         tests: [
             {pattern: 'tests/*.tests.js', load: false}
         ],
+        testFramework: 'mocha',
         compilers: {
             '**/*.js': wallaby.compilers.babel({
             })
