@@ -2,7 +2,7 @@ import {expect} from 'chai';
 import 'mocha-sinon';
 import {types, validate} from './../src';
 
-describe("Primitives", ()=> {
+describe("Validate primitives", ()=> {
 
     let objectsAndArrays = [
         {value: {}, type: types.object, nonPrimitive: true},

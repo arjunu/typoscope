@@ -10,41 +10,41 @@ const types = {
 };
 
 function validate(type, value, getLogs) {
-    let level = -1, path = [];
+    let path = [], isValid = true;
 
     const getType = item => Object.prototype.toString.call(item).slice(8, -1);
 
     const checkPrimitiveType = (type, value) => {
 
-        if (type === types.any || type === getType(value)) {
-            return true;
-        }
-        else {
+        if (type !== types.any && type !== getType(value)) {
+            isValid = false;
             if (getLogs) {
                 console.error(`Type mismatch for '${arrayToPath(path) || getPrintableValue(value)}': expected ${type}, got ${getType(value)}`);
             }
-            return false
         }
     };
 
     const checkObjectType =
         (type, value) => {
-            level++;
 
-            let valid = getType(value) !== types.object ? false : Object.keys(type).every(
-                tKey => {
-                    path.push(tKey);
-                    console.log(level, path);
-                    let valid = !value.hasOwnProperty(tKey) ? false : checkType(type[tKey], value[tKey], tKey);
-                    path.pop();
-                    return valid;
-
-                });
-
-            path.pop();
-            level--;
-
-            return valid;
+            if (getType(value) !== types.object) {
+                isValid = false;
+            }
+            else {
+                Object.keys(type).forEach(
+                    tKey => {
+                        path.push(tKey);
+                        if (!value.hasOwnProperty(tKey)) {
+                            if (getLogs)
+                                console.error(`Missing property: '${path.length > 0 ? arrayToPath(path) : tKey}'`);
+                            isValid = false;
+                        }
+                        else {
+                            checkType(type[tKey], value[tKey]);
+                        }
+                        path.pop();
+                    });
+            }
         };
 
     const checkArrayType =
@@ -88,7 +88,8 @@ function validate(type, value, getLogs) {
         return value;
     };
 
-    return checkType(type, value);
+    checkType(type, value);
+    return isValid;
 }
 
 export {
