@@ -1,19 +1,63 @@
 # Typoscope
-A runtime type validator for compound Javascript objects
+A runtime type schema validator for compound Javascript objects & arrays
 
-For a given object schema and object, it checks if the object satisfies the schema.
+For a given type schema and a value (object or array), it checks if the object or array satisfies the schema.
 
-## Installation 
+Typoscope checks from given type schema:
+ - if your object (array of objects) has all the properties of corresponding types mentioned
+ - if your array has items of given type (heterogeneous arrays not yet supported, use type 'Any' for now)
 
-Drop the <a href="https://github.com/arjunu/type-validator/blob/master/src/typoscope.js">typoscope.js</a>
-file anywhere in your project to use it. It's in ES6, transpile it before using if your project is in ES5. 
+Basically it says yes (true) or no (false). Error logging pinpointing invalid values is coming soon.
 
-:exclamation:Node module coming soon :soon:
+```javascript
+validate(userSchema, user); //returns true or false
+```
+
+Compound objects are supported:
+
+```javascript
+{
+    name: 'Sandeep',
+    id: 1,
+    active: true,
+    projects: [{
+        name: 'Tada Todo',
+        id: 1,
+        titles: ['JS', 'React'],
+        lead: 'Michael'
+    }],
+    tasks: [{
+        project: 'Life',
+        id: 1,
+        items: ['Eat', 'Code']
+    }]
+};
+
+```
+Supported types:
+
+- Boolean
+- String
+- Number
+- Null
+- Undefined
+- Array
+- Object
+- Any
+
+Type `any` means the property can be any of the other types: primitives (including `null` and `undefined`) or Array or Object
+but the property cannot be missing from the object.
+
+## Installation
+
+```javascript
+npm install typoscope --save
+```
 
 ## Usage Example (ES6)
 
 ```javascript
-import { validate, types } from 'type-validator';
+import { validate, types } from 'typoscope';
 
 /**Simple objects*/
 
@@ -90,19 +134,15 @@ let user2 = {
 validate(userSchema, user2); //returns false
 ```
 
-Supported types:
+## Motivation
 
-- Boolean
-- String
-- Number
-- Null
-- Undefined
-- Array
-- Object
-- Any
+During front end (and server) development we want to know if the server is sending correct data. Same goes for posting
+data to server. At least until we perfect both and go into production. A missing property (`user.email`) or a value of
+wrong type (number in place of string) could produce a bug or even crash the application. In the hunt for the cause, you
+will head to the network tab under browser dev tools and manually inspect the response object. Instead we could have a
+utility (enter Typoscope) doing the inspection for data to and fro the server.
 
-Type `any` means the property can be any of the other types: primitives (including `null` and `undefined`) or Array or Object
-but the property cannot be missing from the object.
+Inspecting server communications is just one use case! Do tell us where you have used it.
 
 ## License
 
