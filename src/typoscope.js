@@ -80,6 +80,7 @@ function validate(type, value, getLogs) {
     };
 
     const getPrintableValue = value => {
+        //TODO trim large values
         let compoundTypes = [types.object, types.array];
         if (compoundTypes.indexOf(getType(value)) >= 0) {
             return JSON.stringify(value);
