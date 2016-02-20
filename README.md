@@ -1,11 +1,11 @@
-# Type Validator
+# Typoscope
 A runtime type validator for compound Javascript objects
 
 For a given object schema and object, it checks if the object satisfies the schema.
 
 ## Installation 
 
-Drop the <a href="https://github.com/arjunu/type-validator/blob/master/src/type-validator.js">type-validator.js</a> 
+Drop the <a href="https://github.com/arjunu/type-validator/blob/master/src/typoscope.js">typoscope.js</a>
 file anywhere in your project to use it. It's in ES6, transpile it before using if your project is in ES5. 
 
 :exclamation:Node module coming soon :soon:

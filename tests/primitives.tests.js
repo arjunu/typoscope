@@ -1,5 +1,5 @@
 import {expect} from 'chai';
-import {types, validate} from './../src/type-validator';
+import {types, validate} from './../src';
 
 describe("Validate primitives", ()=> {
 

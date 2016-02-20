@@ -1,8 +1,8 @@
 {
-  "name": "type-validator",
+  "name": "typoscope",
   "version": "1.0.0",
-  "description": "",
-  "main": "src/type-validator.js",
+  "description": "A runtime type schema validator for compound Javascript objects",
+  "main": "lib/index.js",
   "scripts": {
     "build": "babel src --out-dir lib",
     "test": "echo \"Error: Run Wallaby JS\" && exit 1"
@@ -12,11 +12,11 @@
     "url": "git+https://github.com/arjunu/type-validator.git"
   },
   "author": "Arjun U.",
-  "license": "ISC",
+  "license": "MIT",
   "bugs": {
-    "url": "https://github.com/arjunu/type-validator/issues"
+    "url": "https://github.com/arjunu/typoscope/issues"
   },
-  "homepage": "https://github.com/arjunu/type-validator#readme",
+  "homepage": "https://github.com/arjunu/typoscope#readme",
   "devDependencies": {
     "babel-cli": "^6.5.1",
     "babel-core": "^6.5.2",
