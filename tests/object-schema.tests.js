@@ -2,6 +2,14 @@ import {expect} from 'chai';
 import {types, validate} from './../src/type-validator';
 
 describe("Validate objects schemas", ()=> {
+    let simpleObjectSchema = {
+        a: types.string, b: types.number, c: types.boolean, d: types.object
+    };
+
+    let simpleArraySchema = [{
+        a: types.string, b: types.number, c: types.boolean, d: types.object
+    }];
+
     let userSchema = {
         name: types.string,
         id: types.number,
@@ -18,15 +26,21 @@ describe("Validate objects schemas", ()=> {
     describe("valid schema", ()=> {
 
         it('simple object should return true', () => {
-            let schema = {
-                a: types.string, b: types.number, c: types.boolean, d: types.object
-            };
+
 
             let trueValue = {
                 a: 'Sandeep', b: 123, c: false, d: {x: 2}
             };
 
-            expect(validate(schema, trueValue)).to.be.equal(true);
+            expect(validate(simpleObjectSchema, trueValue)).to.be.equal(true);
+        });
+
+
+        it('simple array should return true', () => {
+
+            let trueValue = [{a: 'Sandeep', b: 123, c: false, d: {x: 2}}];
+
+            expect(validate(simpleArraySchema, trueValue)).to.be.equal(true);
         });
 
         it('nested object should return true', () => {
@@ -50,7 +64,7 @@ describe("Validate objects schemas", ()=> {
             expect(validate(userSchema, trueValue)).to.be.equal(true);
         });
 
-        it('nested object undefined for any should return true', () => {
+        it('nested object undefined for property tasks of type any should return true', () => {
             let trueValue = {
                 name: 'Sandeep',
                 id: 1,
@@ -67,7 +81,7 @@ describe("Validate objects schemas", ()=> {
             expect(validate(userSchema, trueValue)).to.be.equal(true);
         });
 
-        it('nested object empty array should return true', () => {
+        it('nested object with an empty array for a property projects should return true', () => {
             let trueValue = {
                 name: 'Sandeep',
                 id: 1,
@@ -86,28 +100,44 @@ describe("Validate objects schemas", ()=> {
     });
 
     describe("invalid schema", ()=> {
-        it('types mismatch should return false', ()=> {
-            let schema = {
-                a: types.string, b: types.number, c: types.boolean, d: types.object
-            };
-
+        it('simple object types mismatch should return false', ()=> {
             let falseValue = {
-                a: 'Sandeep', b: 123, c: false, d: []
+                a: 'Sandeep', b: 123, c: false, d: [] //d should be an object
             };
 
             let falseValue2 = {
-                a: 'Sandeep', b: 123, c: 1, d: 1
+                a: 'Sandeep', b: 123, c: 1, d: 1 //d should be an object
             };
 
-            expect(validate(schema, falseValue)).to.be.equal(false);
-            expect(validate(schema, falseValue2)).to.be.equal(false);
+            expect(validate(simpleObjectSchema, falseValue)).to.be.equal(false);
+            expect(validate(simpleObjectSchema, falseValue2)).to.be.equal(false);
         });
 
-        it('missing nested property should return false', () => {
+        it('simple array types mismatch should return true', () => {
+            let falseValue = [{a: 'Sandeep', b: '123', c: false, d: {x: 2}}]; //b should be a number
+
+            expect(validate(simpleObjectSchema, falseValue)).to.be.equal(false);
+        });
+
+        it('simple array empty item should return true', () => {
+
+            //second item is missing it's properties
+            let falseValue = [{a: 'Sandeep', b: 123, c: false, d: {x: 2}}, {}];
+
+            expect(validate(simpleArraySchema, falseValue)).to.be.equal(false);
+        });
+
+        it('missing property should return false', () => {
+            //missing property projects
             let falseValue = {
                 name: 'Sandeep',
                 id: 1,
-                active: true
+                active: true,
+                tasks: [{
+                    project: 'String',
+                    id: 1,
+                    items: ['Eat', 'Code']
+                }]
             };
 
             expect(validate(userSchema, falseValue)).to.be.equal(false);
@@ -118,7 +148,7 @@ describe("Validate objects schemas", ()=> {
                 name: 'Sandeep',
                 id: 1,
                 active: true,
-                projects: [{
+                projects: [{ //missing projects.name
                     id: 1,
                     titles: ['JS', 'Core'],
                     lead: 'Michael'
@@ -134,8 +164,8 @@ describe("Validate objects schemas", ()=> {
         });
 
 
-        it('missing property any should return false', () => {
-
+        it('missing property of type any should return false', () => {
+            //missing property lead
             let falseValue = {
                 name: 'Sandeep',
                 id: 1,
