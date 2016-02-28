@@ -7,6 +7,7 @@ describe("Array schemas", ()=> {
     let simpleStringArraySchema = [types.string];
     let simpleBooleanArraySchema = [types.boolean];
     let simpleNumberArraySchema = [types.number];
+    let simpleAnyArraySchema = [types.any];
 
     let compoundArraySchema = [{
         a: types.string, b: types.number, c: types.boolean, d: types.object
@@ -31,8 +32,12 @@ describe("Array schemas", ()=> {
                 expect(validate(simpleNumberArraySchema, trueValue)).to.be.equal(true);
             });
 
+            it('simple number array should return true', () => {
+                let trueValue = [1, "Apple", 0.23421, NaN, undefined, null, 0, false, true];
+                expect(validate(simpleAnyArraySchema, trueValue)).to.be.equal(true);
+            });
+
             //TODO undefined and null arrays?
-            //TODO any array
         });
 
         describe("compound arrays", ()=> {
@@ -45,9 +50,24 @@ describe("Array schemas", ()=> {
     });
 
     describe("invalid schema", ()=> {
+        beforeEach(function () {
+            this.sinon.stub(console, 'error');
+        });
 
         describe("simple arrays", ()=> {
-            //TODO mismatch
+            //without logs
+            it('simple string array mismatch should return false', () => {
+                let falseValue = ["A", 1, "", ".@#$%"];
+                expect(validate(simpleStringArraySchema, falseValue)).to.be.equal(false);
+            });
+
+            //with logs
+            it('simple string array mismatch should return false & console the apt error', () => {
+                let falseValue = ["A", 1, "", ".@#$%"];
+                expect(validate(simpleStringArraySchema, falseValue, true)).to.be.equal(false);
+                //TODO check log
+            });
+
             //TODO missing values
         });
 

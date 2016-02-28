@@ -210,7 +210,7 @@ describe("Object schemas", ()=> {
             });
         });
 
-        describe('missing nested property should return false', () => {
+        describe('missing nested property', () => {
             let falseUserSchemaValue = {
                 name: 'Sandeep',
                 id: 1,
@@ -236,13 +236,13 @@ describe("Object schemas", ()=> {
             it('should return false & console the apt error', () => {
                 expect(validate(userSchema, falseUserSchemaValue, true)).to.be.equal(false);
                 expect(console.error
-                    .calledWith(`Missing property: 'projects.name'`))
+                    .calledWith(`Missing property: 'projects[0].name'`))
                     .to.be.equal(true);
             });
 
         });
 
-        describe('missing property of type any should return false', () => {
+        describe('missing property of type any', () => {
             //missing property lead
             let falseUserSchemaValue = {
                 name: 'Sandeep',
@@ -269,9 +269,29 @@ describe("Object schemas", ()=> {
             it('should return false & console the apt error', () => {
                 expect(validate(userSchema, falseUserSchemaValue, true)).to.be.equal(false);
                 expect(console.error
-                    .calledWith(`Missing property: 'projects.lead'`))
+                    .calledWith(`Missing property: 'projects[0].lead'`))
                     .to.be.equal(true);
             });
+        });
+
+        describe('missing multiple nested properties', () => {
+            //missing property lead
+            let falseUserSchemaValue = {
+                name: 'Sandeep',
+                id: 1,
+                active: true,
+                projects: [{
+                    id: 1,
+                    titles: ['JS', 'Core']
+                }],
+                tasks: [{
+                    project: 'String',
+                    id: 1,
+                    items: ['Eat', 'Code']
+                }]
+            };
+
+           //TODO
         });
 
         //TODO test extra properties

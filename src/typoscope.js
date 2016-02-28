@@ -48,7 +48,18 @@ function validate(type, value, getLogs) {
         };
 
     const checkArrayType =
-        (type, value) => getType(value) !== types.array ? false : value.every(item => checkType(type[0], item));
+        (type, value) => {
+            if (getType(value) !== types.array) {
+                isValid = false
+            }
+            else {
+                value.forEach((item, index) => {
+                    path.push(index);
+                    checkType(type[0], item);
+                    path.pop();
+                });
+            }
+        };
 
     const checkType = (type, value) => {
         switch (getType(type)) {
@@ -71,9 +82,14 @@ function validate(type, value, getLogs) {
         else {
             let pathString = "";
             path.forEach((pathNode, index)=> {
-                if (index > 0)
-                    pathString += ".";
-                pathString += pathNode;
+                if (getType(pathNode) === types.number) {
+                    pathString += `[${pathNode}]`;
+                }
+                else {
+                    if (index > 0)
+                        pathString += ".";
+                    pathString += pathNode;
+                }
             });
             return pathString;
         }
@@ -95,3 +111,5 @@ function validate(type, value, getLogs) {
 export {
     validate, types
 }
+
+//TODO write JS doc comments for functions
