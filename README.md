@@ -7,13 +7,14 @@ Typoscope checks from given type schema:
  - if your object (array of objects) has all the properties of corresponding types mentioned
  - if your array has items of given type (heterogeneous arrays not yet supported, use type 'Any' for now)
 
-Basically it says yes (true) or no (false). Error logging pinpointing invalid values is coming soon.
+Basically it says yes (true) or no (false). Pass a third boolean param `true` to enable error logging for failed validations.
 
 ```javascript
 validate(userSchema, user); //returns true or false
+validate(userSchema, user, true); //returns true or false and logs errors for any type mismatches & missing properties
 ```
 
-Compound objects are supported:
+Compound nested objects are supported:
 
 ```javascript
 {
@@ -65,23 +66,26 @@ let schema = {
     a: types.string, b: types.number, c: types.boolean, d: types.object
 };
 
+let trueValue = {
+    a: 'Sandeep', b: 123, c: false, d: {x: 2}
+};
+validate(schema, trueValue, true); //returns true
+
 let falseValue = {
     a: 'Sandeep', b: 123, c: false, d: []
 };
+validate(schema, falseValue, true); 
+//returns false, log - Type mismatch for 'd': expected Object, got Array
 
 let falseValue2 = {
   a: 'Sandeep', b: 123, c: 1, d: 1
 };
+validate(schema, falseValue2, true); 
+//returns false, log - 
+//Type mismatch for 'c': expected Boolean, got Number
+//Type mismatch for 'd': expected Object, got Number
 
-let trueValue = {
-    a: 'Sandeep', b: 123, c: false, d: {x: 2}
-};
-
-validate(schema, trueValue); //returns true
-validate(schema, falseValue)); //returns false
-validate(schema, falseValue2)); //returns false
-
-/**Nested objects*/
+/**Nested compound objects*/
 
 let userSchema = {
         name: types.string,
@@ -97,8 +101,9 @@ let userSchema = {
     };
     
 let user = {
-      name: 'Sandeep',
-      id: 1,
+      username: 'stardoge',
+      name: {firstName: 'Arjun', lastName: 'Umesh'},
+      id: 56,
       active: true,
       projects: [{
           name: 'Tada Todo',
@@ -106,22 +111,24 @@ let user = {
           titles: ['JS', 'React'],
           lead: 'Michael'
       }],
-      tasks: [{
-          project: 'Life',
-          id: 1,
-          items: ['Eat', 'Code']
-      }]
+      tasks: []
   };
 
-validate(userSchema, user); //returns true
+validate(userSchema, user, true); //returns true
 
 let user2 = {
-      name: 'Sandeep',
+      username: 'sandeep2149',
       id: 1,
-      active: true,
-      projects: [{ //missing projects.name
+      active: 0,
+      name: {firstName: "Sandeep"},
+      projects: [{
+          name: "TadaTodo",
           id: 1,
-          titles: ['JS', 'Core'],
+          titles: ['A', 1],
+          lead: 'Michael'
+      },{
+          id: 2,
+          titles: ['X', 'Y'],
           lead: 'Michael'
       }],
       tasks: [{
@@ -131,7 +138,9 @@ let user2 = {
       }]
 };
 
-validate(userSchema, user2); //returns false
+validate(userSchema, user2); 
+//returns false
+// log - Missing property: 'projects[0].name'
 ```
 
 ## Motivation
