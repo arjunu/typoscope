@@ -140,7 +140,11 @@ let user2 = {
 
 validate(userSchema, user2); 
 //returns false
-// log - Missing property: 'projects[0].name'
+//log - 
+//Missing property: 'name.lastName'
+//Type mismatch for 'active': expected Boolean, got Number
+//Type mismatch for 'projects[0].titles[1]': expected String, got Number
+//Missing property: 'projects[1].name'
 ```
 
 ## Motivation
