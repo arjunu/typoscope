@@ -1,6 +1,6 @@
 {
   "name": "typoscope",
-  "version": "1.1.0-alpha",
+  "version": "1.1.0-alpha.1",
   "description": "A runtime type schema validator for compound Javascript objects",
   "main": "lib/index.js",
   "scripts": {
