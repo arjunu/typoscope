@@ -1,27 +1,65 @@
 import {expect} from 'chai';
+import 'mocha-sinon';
 import {types, validate} from './../src';
 
 describe("Validate primitives", ()=> {
 
+    let objectsAndArrays = [
+        {value: {}, type: types.object, nonPrimitive: true},
+        {value: {x: 1, y: 2}, type: types.object, nonPrimitive: true},
+        {value: {x: 1, y: 2, z: {a: "Hello"}}, type: types.object, nonPrimitive: true},
+        {value: [], type: types.array, nonPrimitive: true},
+        {value: [1, 2, 3], type: types.array, nonPrimitive: true},
+        {value: [{x: 1}, {x: 3}, {x: 2}], type: types.array, nonPrimitive: true}];
+
     describe("valid string", ()=> {
         it('should return true', () => {
             expect(validate(types.string, 'Sandeep')).to.be.equal(true);
-
             let name = "Sandeep";
             expect(validate(types.string, `Hello ${name}`)).to.be.equal(true);
         });
     });
 
     describe("invalid string", ()=> {
+        beforeEach(function () {
+            this.sinon.stub(console, 'error');
+        });
+
+        let invalidStrings = [
+            //primitives
+            {value: 0.1, type: types.number},
+            {value: 0, type: types.number},
+            {value: 1, type: types.number},
+            {value: NaN, type: types.number},
+            {value: true, type: types.boolean},
+            {value: false, type: types.boolean},
+            {value: undefined, type: types.undefined},
+            {value: null, type: types.null},
+            ...objectsAndArrays];
+
+        //without logs
         it('should return false', () => {
-            expect(validate(types.string, 0.1)).to.be.equal(false);
-            expect(validate(types.string, 0)).to.be.equal(false);
-            expect(validate(types.string, 1)).to.be.equal(false);
-            expect(validate(types.string, true)).to.be.equal(false);
-            expect(validate(types.string, false)).to.be.equal(false);
-            expect(validate(types.string, NaN)).to.be.equal(false);
-            expect(validate(types.string, undefined)).to.be.equal(false);
-            expect(validate(types.string, null)).to.be.equal(false);
+            invalidStrings.forEach((invalidString)=> {
+                expect(validate(types.string, invalidString.value)).to.be.equal(false);
+            });
+        });
+
+        //with logs
+        it('should return false & console the apt error', () => {
+            invalidStrings.forEach((invalidString)=> {
+                let value = invalidString.value;
+
+                expect(validate(types.string, value, true)).to.be.equal(false);
+
+                if (invalidString.nonPrimitive) {
+                    value = JSON.stringify(value);
+                }
+
+                expect(console.error.calledWith('Typoscope found 1 errors:')).to.be.equal(true);
+                expect(console.error
+                    .calledWith(`Type mismatch for '${value}': expected ${types.string}, got ${invalidString.type}`))
+                    .to.be.equal(true);
+            });
         });
     });
 
@@ -35,11 +73,42 @@ describe("Validate primitives", ()=> {
     });
 
     describe("invalid number", ()=> {
+        beforeEach(function () {
+            this.sinon.stub(console, 'error');
+        });
+
+        let invalidNumbers = [
+            //primitives
+            {value: "0.1", type: types.string},
+            {value: false, type: types.boolean},
+            {value: undefined, type: types.undefined},
+            {value: null, type: types.null},
+            ...objectsAndArrays
+        ];
+
+        //without logs
         it('should return false', () => {
-            expect(validate(types.number, "0.1")).to.be.equal(false);
-            expect(validate(types.number, false)).to.be.equal(false);
-            expect(validate(types.number, undefined)).to.be.equal(false);
-            expect(validate(types.number, null)).to.be.equal(false);
+            invalidNumbers.forEach((invalidNumber)=> {
+                expect(validate(types.number, invalidNumber.value)).to.be.equal(false);
+            });
+        });
+
+        //with logs
+        it('should return false & console the apt error', () => {
+            invalidNumbers.forEach((invalidNumber)=> {
+                let value = invalidNumber.value;
+
+                expect(validate(types.number, value, true)).to.be.equal(false);
+
+                if (invalidNumber.nonPrimitive) {
+                    value = JSON.stringify(value);
+                }
+
+                expect(console.error.calledWith('Typoscope found 1 errors:')).to.be.equal(true);
+                expect(console.error
+                    .calledWith(`Type mismatch for '${value}': expected ${types.number}, got ${invalidNumber.type}`))
+                    .to.be.equal(true);
+            });
         });
     });
 
@@ -51,12 +120,43 @@ describe("Validate primitives", ()=> {
     });
 
     describe("invalid boolean", ()=> {
+        beforeEach(function () {
+            this.sinon.stub(console, 'error');
+        });
+
+        let invalidBooleans = [
+            //primitives
+            {value: "false", type: types.string},
+            {value: 0.1, type: types.number},
+            {value: NaN, type: types.number},
+            {value: undefined, type: types.undefined},
+            {value: null, type: types.null},
+            ...objectsAndArrays
+        ];
+
+        //without logs
         it('should return false', () => {
-            expect(validate(types.boolean, "false")).to.be.equal(false);
-            expect(validate(types.boolean, 0.1)).to.be.equal(false);
-            expect(validate(types.boolean, NaN)).to.be.equal(false);
-            expect(validate(types.boolean, undefined)).to.be.equal(false);
-            expect(validate(types.boolean, null)).to.be.equal(false);
+            invalidBooleans.forEach((invalidBoolean)=> {
+                expect(validate(types.boolean, invalidBoolean.value)).to.be.equal(false);
+            });
+        });
+
+        //with logs
+        it('should return false & console the apt error', () => {
+            invalidBooleans.forEach((invalidBoolean)=> {
+                let value = invalidBoolean.value;
+
+                expect(validate(types.boolean, value, true)).to.be.equal(false);
+
+                if (invalidBoolean.nonPrimitive) {
+                    value = JSON.stringify(value);
+                }
+
+                expect(console.error.calledWith('Typoscope found 1 errors:')).to.be.equal(true);
+                expect(console.error
+                    .calledWith(`Type mismatch for '${value}': expected ${types.boolean}, got ${invalidBoolean.type}`))
+                    .to.be.equal(true);
+            });
         });
     });
 
@@ -67,13 +167,43 @@ describe("Validate primitives", ()=> {
     });
 
     describe("invalid null", ()=> {
+        beforeEach(function () {
+            this.sinon.stub(console, 'error');
+        });
+
+        let invalidNulls = [
+            {value: "null", type: types.string},
+            {value: 0.1, type: types.number},
+            {value: true, type: types.boolean},
+            {value: false, type: types.boolean},
+            {value: NaN, type: types.number},
+            {value: undefined, type: types.undefined},
+            ...objectsAndArrays
+        ];
+
+        //without logs
         it('should return false', () => {
-            expect(validate(types.null, "null")).to.be.equal(false);
-            expect(validate(types.null, 0.1)).to.be.equal(false);
-            expect(validate(types.null, true)).to.be.equal(false);
-            expect(validate(types.null, false)).to.be.equal(false);
-            expect(validate(types.null, NaN)).to.be.equal(false);
-            expect(validate(types.null, undefined)).to.be.equal(false);
+            invalidNulls.forEach((invalidNull)=> {
+                expect(validate(types.null, invalidNull.value)).to.be.equal(false);
+            });
+        });
+
+        //with logs
+        it('should return false & console the apt error', () => {
+            invalidNulls.forEach((invalidNull)=> {
+                let value = invalidNull.value;
+
+                expect(validate(types.null, value, true)).to.be.equal(false);
+
+                if (invalidNull.nonPrimitive) {
+                    value = JSON.stringify(value);
+                }
+
+                expect(console.error.calledWith('Typoscope found 1 errors:')).to.be.equal(true);
+                expect(console.error
+                    .calledWith(`Type mismatch for '${value}': expected ${types.null}, got ${invalidNull.type}`))
+                    .to.be.equal(true);
+            });
         });
     });
 
@@ -84,13 +214,43 @@ describe("Validate primitives", ()=> {
     });
 
     describe("invalid undefined", ()=> {
+        beforeEach(function () {
+            this.sinon.stub(console, 'error');
+        });
+
+        let invalidUndefined = [
+            {value: "undefined", type: types.string},
+            {value: 0.1, type: types.number},
+            {value: true, type: types.boolean},
+            {value: false, type: types.boolean},
+            {value: NaN, type: types.number},
+            {value: null, type: types.null},
+            ...objectsAndArrays
+        ];
+
+        //without logs
         it('should return false', () => {
-            expect(validate(types.undefined, "undefined")).to.be.equal(false);
-            expect(validate(types.undefined, 0.1)).to.be.equal(false);
-            expect(validate(types.undefined, true)).to.be.equal(false);
-            expect(validate(types.undefined, false)).to.be.equal(false);
-            expect(validate(types.undefined, NaN)).to.be.equal(false);
-            expect(validate(types.undefined, null)).to.be.equal(false);
+            invalidUndefined.forEach((i)=> {
+                expect(validate(types.undefined, i.value)).to.be.equal(false);
+            });
+        });
+
+        //with logs
+        it('should return false & console the apt error', () => {
+            invalidUndefined.forEach((i)=> {
+                let value = i.value;
+
+                expect(validate(types.undefined, value, true)).to.be.equal(false);
+
+                if (i.nonPrimitive) {
+                    value = JSON.stringify(value);
+                }
+
+                expect(console.error.calledWith('Typoscope found 1 errors:')).to.be.equal(true);
+                expect(console.error
+                    .calledWith(`Type mismatch for '${value}': expected ${types.undefined}, got ${i.type}`))
+                    .to.be.equal(true);
+            });
         });
     });
 
@@ -110,5 +270,8 @@ describe("Validate primitives", ()=> {
             expect(validate(types.any, [{x: 1, y: 2}])).to.be.equal(true);
         });
     });
+
+    //there's no invalid any case
+
 });
 
