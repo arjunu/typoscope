@@ -27,7 +27,6 @@ describe("Object schemas", ()=> {
     describe("valid schema", ()=> {
 
         it('simple object should return true', () => {
-
             let trueValue = {
                 a: 'Sandeep', b: 123, c: false, d: {x: 2}, e: [1, 2, 3]
             };
@@ -36,7 +35,6 @@ describe("Object schemas", ()=> {
         });
 
         it('simple object with any should return true', () => {
-
             let trueValues = [
                 {a: 'Sandeep', b: 123, c: false, d: {x: 2}, e: [1, 2, 3], f: ''},
                 {a: 'Sandeep', b: 123, c: false, d: {x: 2}, e: [1, 2, 3], f: 1},
@@ -107,6 +105,25 @@ describe("Object schemas", ()=> {
             expect(validate(userSchema, trueValue)).to.be.equal(true);
         });
 
+        //extra properties
+        it('nested object with extra properties should return true', () => {
+            let trueValue = {
+                name: 'Sandeep',
+                id: 1,
+                firstName: 'Sandeep',
+                lastName: 'Kumar',
+                active: true,
+                projects: [], //empty array
+                tasks: [{
+                    project: 'String',
+                    id: 1,
+                    items: ['Eat', 'Code']
+                }]
+            };
+
+            expect(validate(userSchema, trueValue)).to.be.equal(true);
+        });
+
     });
 
     describe("invalid schema", ()=> {
@@ -131,15 +148,18 @@ describe("Object schemas", ()=> {
             //with logs
             it('should return false & console the apt error', () => {
                 expect(validate(simpleObjectSchema, falseValues[0], true)).to.be.equal(false);
+                expect(console.error.calledWith('Typoscope found 1 errors:')).to.be.equal(true);
                 expect(console.error
                     .calledWith(`Type mismatch for '${'b'}': expected ${types.number}, got ${types.string}`))
                     .to.be.equal(true);
 
+                expect(console.error.calledWith('Typoscope found 1 errors:')).to.be.equal(true);
                 expect(validate(simpleObjectSchema, falseValues[1], true)).to.be.equal(false);
                 expect(console.error
                     .calledWith(`Type mismatch for 'd': expected ${types.object}, got ${types.array}`))
                     .to.be.equal(true);
 
+                expect(console.error.calledWith('Typoscope found 1 errors:')).to.be.equal(true);
                 expect(validate(simpleObjectSchema, falseValues[2], true)).to.be.equal(false);
                 expect(console.error
                     .calledWith(`Type mismatch for 'c': expected ${types.boolean}, got ${types.number}`))
@@ -164,6 +184,7 @@ describe("Object schemas", ()=> {
             //with logs
             it('1. should return false & console the apt error', () => {
                 expect(validate(simpleObjectSchema, falseValues[0], true)).to.be.equal(false);
+                expect(console.error.calledWith('Typoscope found 2 errors:')).to.be.equal(true);
                 expect(console.error
                     .calledWith(`Type mismatch for '${'a'}': expected ${types.string}, got ${types.number}`))
                     .to.be.equal(true);
@@ -174,6 +195,7 @@ describe("Object schemas", ()=> {
 
             it('2. should return false & console the apt error', () => {
                 expect(validate(simpleObjectSchema, falseValues[1], true)).to.be.equal(false);
+                expect(console.error.calledWith('Typoscope found 2 errors:')).to.be.equal(true);
                 expect(console.error
                     .calledWith(`Type mismatch for '${'a'}': expected ${types.string}, got ${types.number}`))
                     .to.be.equal(true);
@@ -181,6 +203,40 @@ describe("Object schemas", ()=> {
                     .calledWith(`Type mismatch for '${'a'}': expected ${types.string}, got ${types.number}`))
                     .to.be.equal(true);
             });
+        });
+
+        describe('nested property type mismatch', () => {
+            let falseUserSchemaValue = {
+                name: 'Sandeep',
+                id: 1,
+                active: true,
+                projects: [{ //projects.name should be number
+                    name: 123,
+                    id: 1,
+                    titles: ['JS', 'Core'],
+                    lead: 'Michael'
+                }],
+                tasks: [{
+                    project: 'String',
+                    id: 1,
+                    items: ['Eat', 'Code']
+                }]
+            };
+
+            //without logs
+            it('should return false', () => {
+                expect(validate(userSchema, falseUserSchemaValue)).to.be.equal(false);
+            });
+
+            //with logs
+            it('should return false & console the apt error', () => {
+                expect(validate(userSchema, falseUserSchemaValue, true)).to.be.equal(false);
+                expect(console.error.calledWith('Typoscope found 1 errors:')).to.be.equal(true);
+                expect(console.error
+                    .calledWith(`Type mismatch for 'projects[0].name': expected String, got Number`))
+                    .to.be.equal(true);
+            });
+
         });
 
         describe('missing property', ()=> {
@@ -204,6 +260,7 @@ describe("Object schemas", ()=> {
             //with logs
             it('should return false & console the apt error', () => {
                 expect(validate(userSchema, falseUserSchemaValue, true)).to.be.equal(false);
+                expect(console.error.calledWith('Typoscope found 1 errors:')).to.be.equal(true);
                 expect(console.error
                     .calledWith(`Missing property: 'projects'`))
                     .to.be.equal(true);
@@ -235,6 +292,7 @@ describe("Object schemas", ()=> {
             //with logs
             it('should return false & console the apt error', () => {
                 expect(validate(userSchema, falseUserSchemaValue, true)).to.be.equal(false);
+                expect(console.error.calledWith('Typoscope found 1 errors:')).to.be.equal(true);
                 expect(console.error
                     .calledWith(`Missing property: 'projects[0].name'`))
                     .to.be.equal(true);
@@ -268,6 +326,7 @@ describe("Object schemas", ()=> {
             //with logs
             it('should return false & console the apt error', () => {
                 expect(validate(userSchema, falseUserSchemaValue, true)).to.be.equal(false);
+                expect(console.error.calledWith('Typoscope found 1 errors:')).to.be.equal(true);
                 expect(console.error
                     .calledWith(`Missing property: 'projects[0].lead'`))
                     .to.be.equal(true);
@@ -283,6 +342,60 @@ describe("Object schemas", ()=> {
                 projects: [{
                     id: 1,
                     titles: ['JS', 'Core']
+                }, {
+                    name: "Project X",
+                    titles: ['JS', 'Core']
+                }],
+                tasks: [{
+                    project: 'TadaTodo',
+                    id: 1,
+                    items: ['A', 'B']
+                }, {
+                    id: 2,
+                    items: ['C', 'D']
+                }]
+            };
+
+            //without logs
+            it('should return false', () => {
+                expect(validate(userSchema, falseUserSchemaValue)).to.be.equal(false);
+            });
+
+            //with logs
+            it('should return false & console the apt error', () => {
+                expect(validate(userSchema, falseUserSchemaValue, true)).to.be.equal(false);
+                expect(console.error.calledWith('Typoscope found 4 errors:')).to.be.equal(true);
+                expect(console.error
+                    .calledWith(`Missing property: 'projects[0].name'`))
+                    .to.be.equal(true);
+                expect(console.error
+                    .calledWith(`Missing property: 'projects[0].lead'`))
+                    .to.be.equal(true);
+                expect(console.error
+                    .calledWith(`Missing property: 'projects[1].id'`))
+                    .to.be.equal(true);
+                expect(console.error
+                    .calledWith(`Missing property: 'projects[1].lead'`))
+                    .to.be.equal(true);
+            });
+
+        });
+
+        describe('multiple errors', () => {
+            let falseUserSchemaValue = {
+                username: 'sandeep2149',
+                id: 1,
+                active: 0,
+                name: {firstName: "Sandeep"},
+                projects: [{
+                    name: "TadaTodo",
+                    id: 1,
+                    titles: ['A', 1],
+                    lead: 'Michael'
+                },{
+                    id: 2,
+                    titles: ['X', 'Y'],
+                    lead: 'Michael'
                 }],
                 tasks: [{
                     project: 'String',
@@ -291,11 +404,31 @@ describe("Object schemas", ()=> {
                 }]
             };
 
-           //TODO
+            //without logs
+            it('should return false', () => {
+                expect(validate(userSchema, falseUserSchemaValue)).to.be.equal(false);
+            });
+
+            //with logs
+            it('should return false & console the apt error', () => {
+                expect(validate(userSchema, falseUserSchemaValue, true)).to.be.equal(false);
+                expect(console.error.calledWith('Typoscope found 4 errors:')).to.be.equal(true);
+                expect(console.error
+                    .calledWith(`Type mismatch for 'name': expected String, got Object`))
+                    .to.be.equal(true);
+                expect(console.error
+                    .calledWith(`Type mismatch for 'active': expected Boolean, got Number`))
+                    .to.be.equal(true);
+                expect(console.error
+                    .calledWith(`Type mismatch for 'projects[0].titles[1]': expected String, got Number`))
+                    .to.be.equal(true);
+                expect(console.error
+                    .calledWith(`Missing property: 'projects[1].name'`))
+                    .to.be.equal(true);
+            });
+
         });
 
-        //TODO test extra properties
-        //TODO test multiple nested missing properties
     });
 
 });

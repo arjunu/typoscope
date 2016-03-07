@@ -9,8 +9,15 @@ const types = {
     any: "Any"
 };
 
-function validate(type, value, getLogs) {
-    let path = [], isValid = true;
+/**
+ * @desc tests values against given type schema
+ * @param type: type schema for value to be tested against 
+ * @param value: value to be tested
+ * @param printLogs: if true, consoles errors
+ * @returns {boolean}
+ */
+function validate(type, value, printLogs) {
+    let path = [], isValid = true, errors = [];
 
     const getType = item => Object.prototype.toString.call(item).slice(8, -1);
 
@@ -18,8 +25,8 @@ function validate(type, value, getLogs) {
 
         if (type !== types.any && type !== getType(value)) {
             isValid = false;
-            if (getLogs) {
-                console.error(`Type mismatch for '${arrayToPath(path) || getPrintableValue(value)}': expected ${type}, got ${getType(value)}`);
+            if (printLogs) {
+                errors.push(`Type mismatch for '${arrayToPath(path) || getPrintableValue(value)}': expected ${type}, got ${getType(value)}`);
             }
         }
     };
@@ -35,8 +42,9 @@ function validate(type, value, getLogs) {
                     tKey => {
                         path.push(tKey);
                         if (!value.hasOwnProperty(tKey)) {
-                            if (getLogs)
-                                console.error(`Missing property: '${path.length > 0 ? arrayToPath(path) : tKey}'`);
+                            if (printLogs)
+                                errors.push(`Missing property: '${path.length > 0 ? arrayToPath(path) : tKey}'`);
+
                             isValid = false;
                         }
                         else {
@@ -75,6 +83,11 @@ function validate(type, value, getLogs) {
         }
     };
 
+    /**
+     * @desc to convert path array to string
+     * @param path
+     * @returns {string}
+     */
     const arrayToPath = path => {
         if (path.length === 0) {
             return "";
@@ -95,6 +108,11 @@ function validate(type, value, getLogs) {
         }
     };
 
+    /**
+     * @desc to convert values into printable form
+     * @param value
+     * @returns {*}
+     */
     const getPrintableValue = value => {
         //TODO trim large values
         let compoundTypes = [types.object, types.array];
@@ -105,11 +123,16 @@ function validate(type, value, getLogs) {
     };
 
     checkType(type, value);
+
+    //console the errors
+    if (errors.length > 0) {
+        console.error(`Typoscope found ${errors.length} errors:`);
+        errors.forEach((error)=>(console.error(error)));
+    }
+
     return isValid;
 }
 
 export {
     validate, types
 }
-
-//TODO write JS doc comments for functions

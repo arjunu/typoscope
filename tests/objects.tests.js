@@ -47,6 +47,7 @@ describe("Validate objects and arrays", ()=> {
                     value = JSON.stringify(value);
                 }
 
+                expect(console.error.calledWith('Typoscope found 1 errors:')).to.be.equal(true);
                 expect(console.error
                     .calledWith(`Type mismatch for '${value}': expected ${types.object}, got ${invalidObject.type}`))
                     .to.be.equal(true);
@@ -96,6 +97,7 @@ describe("Validate objects and arrays", ()=> {
                     value = JSON.stringify(value);
                 }
 
+                expect(console.error.calledWith('Typoscope found 1 errors:')).to.be.equal(true);
                 expect(console.error
                     .calledWith(`Type mismatch for '${value}': expected ${types.array}, got ${invalidArray.type}`))
                     .to.be.equal(true);

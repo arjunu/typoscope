@@ -55,6 +55,7 @@ describe("Validate primitives", ()=> {
                     value = JSON.stringify(value);
                 }
 
+                expect(console.error.calledWith('Typoscope found 1 errors:')).to.be.equal(true);
                 expect(console.error
                     .calledWith(`Type mismatch for '${value}': expected ${types.string}, got ${invalidString.type}`))
                     .to.be.equal(true);
@@ -103,6 +104,7 @@ describe("Validate primitives", ()=> {
                     value = JSON.stringify(value);
                 }
 
+                expect(console.error.calledWith('Typoscope found 1 errors:')).to.be.equal(true);
                 expect(console.error
                     .calledWith(`Type mismatch for '${value}': expected ${types.number}, got ${invalidNumber.type}`))
                     .to.be.equal(true);
@@ -150,6 +152,7 @@ describe("Validate primitives", ()=> {
                     value = JSON.stringify(value);
                 }
 
+                expect(console.error.calledWith('Typoscope found 1 errors:')).to.be.equal(true);
                 expect(console.error
                     .calledWith(`Type mismatch for '${value}': expected ${types.boolean}, got ${invalidBoolean.type}`))
                     .to.be.equal(true);
@@ -196,6 +199,7 @@ describe("Validate primitives", ()=> {
                     value = JSON.stringify(value);
                 }
 
+                expect(console.error.calledWith('Typoscope found 1 errors:')).to.be.equal(true);
                 expect(console.error
                     .calledWith(`Type mismatch for '${value}': expected ${types.null}, got ${invalidNull.type}`))
                     .to.be.equal(true);
@@ -242,6 +246,7 @@ describe("Validate primitives", ()=> {
                     value = JSON.stringify(value);
                 }
 
+                expect(console.error.calledWith('Typoscope found 1 errors:')).to.be.equal(true);
                 expect(console.error
                     .calledWith(`Type mismatch for '${value}': expected ${types.undefined}, got ${i.type}`))
                     .to.be.equal(true);
@@ -265,5 +270,8 @@ describe("Validate primitives", ()=> {
             expect(validate(types.any, [{x: 1, y: 2}])).to.be.equal(true);
         });
     });
+
+    //there's no invalid any case
+
 });
 

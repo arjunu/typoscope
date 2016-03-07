@@ -1,6 +1,7 @@
 node_modules
 tests
 coverage
+wallaby.js
 .babelrc
 .gitignore
 .idea/
