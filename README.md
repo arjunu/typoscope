@@ -4,17 +4,17 @@ A runtime type schema validator for compound Javascript objects & arrays
 For a given type schema and a value (object or array), it checks if the object or array satisfies the schema.
 
 Typoscope checks from given type schema:
- - if your object (array of objects) has all the properties of corresponding types mentioned
- - if your array has items of given type (heterogeneous arrays not yet supported, use type 'Any' for now)
+ - if your object (or array of objects) has all the properties of corresponding types mentioned
+ - if your array (including any nested objects or arrays) has items of given type (heterogeneous arrays not yet supported, use type 'Any' for now)
 
-Basically it says yes (true) or no (false). Pass a third boolean param `true` to enable error logging for failed validations.
+Extra properties, if any, are ignored. It returns true or false. Pass a third boolean param `true` to enable error logging for failed validations.
 
 ```javascript
 validate(userSchema, user); //returns true or false
 validate(userSchema, user, true); //returns true or false and logs errors for any type mismatches & missing properties
 ```
 
-Compound nested objects are supported:
+Compound nested objects & arrays are supported:
 
 ```javascript
 {
@@ -140,7 +140,8 @@ let user2 = {
 
 validate(userSchema, user2); 
 //returns false
-//log - 
+//log -
+//Typoscope found 4 errors:
 //Missing property: 'name.lastName'
 //Type mismatch for 'active': expected Boolean, got Number
 //Type mismatch for 'projects[0].titles[1]': expected String, got Number
