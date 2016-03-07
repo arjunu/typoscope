@@ -2,7 +2,7 @@ var wallabyWebpack = require('wallaby-webpack');
 var webpackPostprocessor = wallabyWebpack({});
 
 //Use phantomjs 2.0.0 or greater
-var runner = '/Users/username/Downloads/phantomjs-2.1.1-macosx/bin/phantomjs';
+var runner = '/Users/user/Downloads/phantomjs-2.1.1-macosx/bin/phantomjs';
 //runner: '/Users/user/Downloads/phantomjs-2.1.1-macosx/bin/phantomjs'
 // or
 // runner: 'C:\\Tmp\\phantomjs-2.1.1-windows\\bin\\phantomjs.exe'
